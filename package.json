@@ -24,7 +24,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "codemod": "jscodeshift -t codemod-transform-examples/importDeclaration.transform.ts src/components/Button.tsx"
+    "codemod": "jscodeshift -t codemod-transform-examples/addProps.transform.ts src/components/Button.tsx"
   },
   "eslintConfig": {
     "extends": [
