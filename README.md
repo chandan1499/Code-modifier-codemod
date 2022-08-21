@@ -11,7 +11,7 @@ npm i jscodeshift
 jscodeshift -t myTransforms[transformer file] filePath [file paths you wish to transform]
 ```
 ## How to write transformer file
-Writing a custom transformation isn't very easy and one needs to understand how typescript internally converts plain string to an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
+Writing a custom transformation isn't very easy and one needs to understand how script file internally converts plain string to an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
 Also checkout the  [AST Explorer](https://astexplorer.net/)  website to get an understanding of ASTs in general.
 
