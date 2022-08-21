@@ -1,4 +1,4 @@
-import { Button, Radio } from "@mui/material";
+import Button from "@mui/material/Button";
 
 const ButtonComponent = () => {
   return (

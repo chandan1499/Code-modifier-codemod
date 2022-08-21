@@ -24,8 +24,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "codemod": "jscodeshift -t codemod-transform-examples/addProps.transform.ts src/components/Button.tsx"
+    "codemod": "jscodeshift -t codemod-transform-examples/importDeclaration.transform.ts src/components/Button.tsx"
   },
+  "author": "Chandan Gupta <gupta.chandan1499@gmail.com>",
   "eslintConfig": {
     "extends": [
       "react-app",

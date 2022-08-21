@@ -1,14 +1,13 @@
 /**
- *  Three types of Import statements
+ *  So lets say I want to update the all three types of import statements throughout the application from something like —
+ *
  *  => import Button from "@mui/material/Button"
  *  => import {Button} from "@mui/material"
  *  => import {Button, Radio, textfield} from "@mui/material"
  *
- *  Agenda
- *  changing all Button imports path to "@newButtonImportPath"
+ *  to -
+ *  import {Button} from "@abc"
  */
-
-export const parser = "tsx";
 
 export default function transformer(file, api) {
   const j = api.jscodeshift;
@@ -26,7 +25,7 @@ export default function transformer(file, api) {
     .remove();
 
   root.find(j.ImportDeclaration).forEach((path) => {
-    if (path.value.source.value !== "@newButtonImportPath") {
+    if (path.value.source.value !== "@abc") {
       let foundButton = false;
       let newArr = path?.value.specifiers.filter((importClause) => {
         if (importClause?.imported?.name === "Button") {
@@ -39,7 +38,7 @@ export default function transformer(file, api) {
       });
 
       if (path?.value.specifiers.length === 1 && foundButton) {
-        path.value.source.value = "@newButtonImportPath";
+        path.value.source.value = "@abc";
       } else if (foundButton) {
         path.value.specifiers = newArr;
         shouldAddNewImportStatement = true;
@@ -50,7 +49,7 @@ export default function transformer(file, api) {
   if (shouldAddNewImportStatement) {
     const newButtonImport = j.importDeclaration(
       [j.importDefaultSpecifier(j.identifier("{Button}"))],
-      j.stringLiteral("@newButtonImportPath")
+      j.stringLiteral("@abc")
     );
 
     root.get().node.program.body.unshift(newButtonImport);
