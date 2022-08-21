@@ -30,7 +30,7 @@ import {Button} from '@abc'
 ```
 
 To achieve this goal I will remove old import declaration add new import declaration. 
-1.  Create a transformer file `importDeclaration.transform.ts` file
+1.  Create a transformer file `importDeclaration.transform.ts`
 ```ts
 export  default  function  transformer(file, api) {
 	const  j = api.jscodeshift;
