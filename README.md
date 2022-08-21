@@ -1,46 +1,79 @@
-# Getting Started with Create React App
+# Codemod examples
+This repository contains codemod scripts for use with [JSCodeshift](https://github.com/facebook/jscodeshift).
+## How to install and run Codemod
+### 1.  Installation
+```bash
+npm i jscodeshift
+```
+### 2. Command for transform files
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```bash
+jscodeshift -t myTransforms[transformer file] filePath [file paths you wish to transform]
+```
+## How to write transformer file
+Writing a custom transformation isn't very easy and one needs to understand how typescript internally converts plain string to an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
-## Available Scripts
+Also checkout the  [AST Explorer](https://astexplorer.net/)  website to get an understanding of ASTs in general.
 
-In the project directory, you can run:
+### Example
 
-### `yarn start`
+So lets say I want to update the import statements throughout the application from something like —
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```ts
+import Button from '@mui/material/Button'
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+to something like —
 
-### `yarn test`
+```ts
+import {Button} from '@abc'
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+To achieve this goal I will remove old import declaration add new import declaration. 
+1.  Create a transformer file `importDeclaration.transform.ts` file
+```ts
+export  default  function  transformer(file, api) {
+	const  j = api.jscodeshift;
+	const  root = j(file.source);
+	
+	root
+	.find(j.ImportDeclaration)
+	.filter((path) => path?.node?.source?.value === "@mui/material/Button")
+	.remove();
+	
+	const  newButtonImport = j.importDeclaration(
+		[j.importDefaultSpecifier(j.identifier("{Button}"))],
+		j.stringLiteral("@abc")
+	);
+	
+	root.get().node.program.body.unshift(newButtonImport);
+	return  root.toSource();
+}
+```
+2.  Run transformer file over your application 
+```bash
+jscodeshift -t importDeclaration.transform.ts ./src
+```
 
-### `yarn build`
+## Checkout more examples
+For checking out more examples just follow below commands -
+```bash
+1. git clone https://github.com/chandan1499/tsx-codemod-example.git
+2. cd tsx-codemod-example
+3. code .
+4. cd codemod-transform-examples
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Post Transformation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1.  Life can't be that simple right? Running transformations will generally ruin the formatting of your files. A recommended way to solve that problem is by using [Prettier].
+2.  Even after running prettier its possible to have unnecessary new lines added/removed. This can be solved by ignoring white spaces while staging the changes in `git`.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+git diff --ignore-blank-lines | git apply --cached
+```
 
-### `yarn eject`
+[prettier]: https://prettier.io
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Also checkout For writing your custom transformer
+[jscodeshift community Docs](https://www.codeshiftcommunity.com/docs/)
